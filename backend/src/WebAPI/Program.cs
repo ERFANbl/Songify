@@ -1,5 +1,6 @@
 using EntityFrameworkCore.Configuration;
 using Serilog;
+using Songify.Infrastructure;
 using WebAPI.configurations;
 
 Log.Logger = LoggingConfiguration.ConfigureSerilog();
@@ -15,6 +16,7 @@ builder.Services.AddControllers();
 
 // Register the DbContext with PostgreSQL connection string from appsettings.json or environment variable.
 builder.Services.AddDbContext<SongifyDbContext>();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
 // Add Swagger generation
 builder.Services.AddEndpointsApiExplorer();  // This is needed for OpenAPI (Swagger) documentation generation
