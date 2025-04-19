@@ -3,6 +3,7 @@ using System;
 using EntityFrameworkCore.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(SongifyDbContext))]
-    partial class SongifyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250419202411_first database models created_song PlayList User PlaylistSong")]
+    partial class firstdatabasemodelscreated_songPlayListUserPlaylistSong
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
