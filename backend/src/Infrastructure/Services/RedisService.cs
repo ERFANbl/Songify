@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Songify.Domain.Interfaces;
 using StackExchange.Redis;
 
-namespace Songify.Infrastructure.Services
+namespace Infrastructure.Services
 {
     public class RedisService : IRedisService
     {

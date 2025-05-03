@@ -7,11 +7,10 @@ namespace Domain.DbMpdels
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string PasswordHash { get; set; }
         //Updated by Recommendation System 
         public string? MadeForUser { get; set; }
         public string? Token { get; set; }
         public List<PlayList>? Playlists { get; set; } // One-to-Many
     }
-
-
 }
