@@ -1,6 +1,3 @@
-Thought for a second
-
-
 # Song Representation & Multi-Label Regression System
 
 This repository implements a **multimodal** system that fuses **song lyrics**, **audio features**, and **metadata** into a single joint embedding and predicts 18 continuous song‐level labels. The architecture is end‑to‑end trainable (including the LLM) and may evolve over time.
