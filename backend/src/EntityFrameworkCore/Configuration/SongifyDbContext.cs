@@ -8,8 +8,6 @@ namespace EntityFrameworkCore.Configuration
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Song> Songs { get; set; }
-        public DbSet<PlayList> PlayLists { get; set; }
-        public DbSet<PlaylistSong> PlaylistSong { get; set; }
 
 
         private readonly IConfiguration _configuration;
@@ -38,29 +36,11 @@ namespace EntityFrameworkCore.Configuration
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<User>()
+                .HasKey(x => x.Id);
 
-            modelBuilder.Entity<PlayList>()
-                .HasOne(p => p.User)
-                .WithMany(u => u.Playlists)
-                .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-
-            modelBuilder.Entity<PlaylistSong>()
-                .HasKey(ps => new { ps.PlaylistId, ps.SongId }); // Composite key
-
-            modelBuilder.Entity<PlaylistSong>()
-                .HasOne(ps => ps.Playlist)
-                .WithMany(p => p.PlaylistSongs)
-                .HasForeignKey(ps => ps.PlaylistId)
-                .OnDelete(DeleteBehavior.Cascade); // Delete join entry if Playlist is deleted
-
-            modelBuilder.Entity<PlaylistSong>()
-                .HasOne(ps => ps.Song)
-                .WithMany(s => s.PlaylistSongs)
-                .HasForeignKey(ps => ps.SongId)
-                .OnDelete(DeleteBehavior.Cascade); // Delete join entry if Song is deleted
-
+            modelBuilder.Entity<Song>()
+                .HasKey(x => x.Id);
 
 
         }
