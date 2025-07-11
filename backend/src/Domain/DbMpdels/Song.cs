@@ -12,8 +12,6 @@ namespace Domain.DbMpdels
         public string? Lyric { get; set; }
         public string? MetaData { get; set; }
 
-        public List<PlaylistSong>? PlaylistSongs { get; set; } // Many-to-Many
-
     }
 
 
