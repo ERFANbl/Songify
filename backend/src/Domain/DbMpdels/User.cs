@@ -11,5 +11,6 @@ namespace Domain.DbMpdels
         //Updated by Recommendation System 
         public string? MadeForUser { get; set; }
         public string? Token { get; set; }
+        public ICollection<Song> Songs { get; set; }
     }
 }
