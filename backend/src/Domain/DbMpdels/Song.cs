@@ -11,6 +11,7 @@ namespace Domain.DbMpdels
         public TimeSpan TrackDuration { get; set; }
         public string? Lyric { get; set; }
         public string? MetaData { get; set; }
+        public string? audioForigenKey { get; set; }
         public bool is_deleted { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }

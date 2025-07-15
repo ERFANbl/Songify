@@ -18,10 +18,12 @@ namespace Infrastructure
             
             // Add repositories
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ISongRepository, SongRepository>();
             
             // Add services
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ISongService, SongService>();
             
             return services;
         }
