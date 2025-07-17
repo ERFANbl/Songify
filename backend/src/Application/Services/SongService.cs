@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs.Song;
 using Domain.DbMpdels;
+using System.Net.Http.Headers;
 
 namespace Application.Services
 {
@@ -21,22 +22,47 @@ namespace Application.Services
             _songRepository = songRepository;
         }
 
+        public async Task<string> UploadToSongEncoderAsync(byte[] audioData, string genre,string releaseDate, string lyric, string Id)
+        {
+            using var httpClient = new HttpClient();
+            using var formContent = new MultipartFormDataContent();
+
+            var fileStreamContent = new StreamContent(new MemoryStream(audioData));
+            fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue("audio/mpeg");
+
+            formContent.Add(fileStreamContent, "audio_file");
+            formContent.Add(new StringContent(genre), "genre");
+            formContent.Add(new StringContent(releaseDate), "releaseDate");
+            formContent.Add(new StringContent(lyric), "lyric");
+            formContent.Add(new StringContent(Id), "Id");
+
+
+            var response = await httpClient.PostAsync("http://python-service/process-audio", formContent);
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
         public async Task<string> UploadSongAsync(byte[] audioData, UploadSongDTO new_song, int userId)
         {
-            var audioKey = $"{Guid.NewGuid()}.mp3";
+            var audioKey = $"{Guid.NewGuid()}";
             var song = new Song
             {
                 Name = new_song.Name,
                 Artist = new_song.Artist,
                 TrackDuration = new_song.TrackDuration,
                 Lyric = new_song.Lyric,
-                MetaData = new_song.MetaData,
-                audioForigenKey = audioKey,
+                Genre = new_song.Genre,
+                ReleaseDate = new_song.ReleaseDate,
+                ForigenKey = audioKey,
                 is_deleted = false,
                 UserId = userId
             };
 
-            await _songRepository.UploadToS3Async(audioData, audioKey);
+            var response = await UploadToSongEncoderAsync(audioData, song.Genre, song.ReleaseDate, song.Lyric, audioKey);
+
+            // if (response == ...) 
+
+            await _songRepository.UploadToS3Async(audioData, audioKey + ".mp3");
 
             await _songRepository.AddAsync(song);
 
