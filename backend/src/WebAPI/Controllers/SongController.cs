@@ -19,7 +19,7 @@ namespace WebAPI.Controllers
         }
 
         [Route("Upload/{userId}")]
-        [HttpPut]
+        [HttpPost]
         public async Task<IActionResult> UploadSong([FromBody] byte[] audioData, [FromBody] UploadSongDTO song,[FromRoute] int userId)
         {
             if (audioData == null) {
@@ -31,6 +31,24 @@ namespace WebAPI.Controllers
             }
 
             return Ok(await _songService.UploadSongAsync(audioData, song, userId));
+        }
+
+        [Route("Delete/{userId}/{songId}")]
+        [HttpPatch]
+        public async Task<IActionResult> DeleteSong([FromRoute] int userId, [FromRoute] int songId)
+        {
+            var result = await _songService.DeleteSong(userId, songId);
+            if (result == null)
+            {
+                return BadRequest("couldn't find user");
+            }
+
+            if (result == "")
+            {
+                return BadRequest("couldn't find song");
+            }
+
+            return Ok();
         }
     }
 }

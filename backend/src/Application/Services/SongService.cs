@@ -71,5 +71,24 @@ namespace Application.Services
             return "Song saved succsessfully";
 
         }
+
+        public async Task<string?> DeleteSong(int userId, int songId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+                return null;
+
+            var song = await _songRepository.GetByIdAsync(songId);
+
+            if (song == null)
+                return "";
+
+            song.is_deleted = true;
+
+            await _songRepository.SaveChangesAsync();
+
+            return $"Song deleted succssesfuly";
+        }
     }
 }

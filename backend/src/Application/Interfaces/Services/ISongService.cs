@@ -10,5 +10,7 @@ namespace Application.Interfaces.Services
     public interface ISongService
     {
         public  Task<string> UploadSongAsync(byte[] audioData, UploadSongDTO song, int userId);
+
+        public  Task<string> DeleteSong(int userId, int songId);
     }
 }

@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Table, Column, Integer, MetaData
+from sqlalchemy import create_engine, Table, Column, TEXT, MetaData
 from sqlalchemy.dialects.postgresql import insert
 from pgvector.sqlalchemy import Vector
 import numpy as np
@@ -8,8 +8,8 @@ metadata = MetaData()
 song_embeddings = Table(
     "SNGF_SongEmbeddings",
     metadata,
-    Column("id", str, primary_key=True),
-    Column("vector", Vector(384))
+    Column("id", TEXT, primary_key=True),
+    Column("vector", Vector(17))
 )
 
 class SongEmbeddingRepository:

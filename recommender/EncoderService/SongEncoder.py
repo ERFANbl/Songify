@@ -73,7 +73,7 @@ def preprocess_metadata(genre: str, release_date: str) -> torch.Tensor:
         raise ValueError(f"Invalid release_date: {release_date}")
 
     scaler = joblib.load("release_date_scaler.pkl")
-    onehot[0] = scaler.transform([[year]])[0][0]
+    onehot[0] = scaler.transform([[year,0]])[0][0]
     return torch.tensor(onehot.reshape(1, -1), dtype=torch.float)
 
 
