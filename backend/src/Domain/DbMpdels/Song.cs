@@ -10,8 +10,12 @@ namespace Domain.DbMpdels
         public string? Artist { get; set; }
         public TimeSpan TrackDuration { get; set; }
         public string? Lyric { get; set; }
-        public string? MetaData { get; set; }
-
+        public string? Genre { get; set; }
+        public string? ReleaseDate { get; set; }
+        public string? ForigenKey { get; set; }
+        public bool is_deleted { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
     }
 
 

@@ -37,12 +37,15 @@ namespace EntityFrameworkCore.Configuration
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>()
+                .HasMany(a => a.Songs)
+                .WithOne(b => b.User)
+                .HasForeignKey(b => b.UserId);
+
+            modelBuilder.Entity<User>()
                 .HasKey(x => x.Id);
 
             modelBuilder.Entity<Song>()
                 .HasKey(x => x.Id);
-
-
         }
     }
 }
