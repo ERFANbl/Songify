@@ -17,9 +17,11 @@ namespace Infrastructure.Repositories;
 public class  SongRepository :  GenericRepository<Song> , ISongRepository
 {
     IConfiguration _config;
+    protected readonly SongifyDbContext _context;
     public SongRepository(SongifyDbContext context, IConfiguration config) : base(context)
     {
         _config = config;
+        _context = context;
     }
 
     public async Task UploadToS3Async(byte[] songData, string fileName)
@@ -50,5 +52,14 @@ public class  SongRepository :  GenericRepository<Song> , ISongRepository
         var response = await client.PutObjectAsync(putRequest);
     }
 
+    public async Task<ICollection<Song>?> GetUserSongsAsync(int userId)
+    {
+        var user = await _context.Users
+            .Include(u => u.Songs)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+
+        return user?.Songs ?? new List<Song>();
+    }
 }
 

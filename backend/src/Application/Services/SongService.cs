@@ -72,7 +72,7 @@ namespace Application.Services
 
         }
 
-        public async Task<string?> DeleteSong(int userId, int songId)
+        public async Task<string?> DeleteSongAsync(int userId, int songId)
         {
             var user = await _userRepository.GetByIdAsync(userId);
 
@@ -86,9 +86,34 @@ namespace Application.Services
 
             song.is_deleted = true;
 
+            await _songRepository.UpdateAsync(song);
+
             await _songRepository.SaveChangesAsync();
 
             return $"Song deleted succssesfuly";
+        }
+
+        public async Task<ICollection<GetSongsMetaDataDTO>?> GetAllSongsMetadataAsync(int userId)
+        {
+            var songs = await _songRepository.GetUserSongsAsync(userId);
+
+            ICollection<GetSongsMetaDataDTO> result = new List<GetSongsMetaDataDTO>();
+
+            foreach (var song in songs)
+            {
+                result.Add(new GetSongsMetaDataDTO
+                {
+                    Id = song.Id,
+                    Name = song.Name,
+                    Artist = song.Artist,
+                    TrackDuration = song.TrackDuration,
+                    Lyric = song.Lyric,
+                    Genre = song.Genre,
+                    ReleaseDate = song.ReleaseDate,
+                });
+            }
+
+            return result;
         }
     }
 }

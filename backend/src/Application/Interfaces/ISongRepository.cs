@@ -10,5 +10,6 @@ namespace Application.Interfaces
     public interface ISongRepository : IRepository<Song>
     {
         public Task UploadToS3Async(byte[] songData, string fileName);
+        public Task<ICollection<Song>?> GetUserSongsAsync(int userId);
     }
 }
