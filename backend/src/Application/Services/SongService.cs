@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Application.DTOs.Song;
 using Domain.DbMpdels;
 using System.Net.Http.Headers;
+using Amazon.Runtime;
+using Amazon.S3.Model;
+using Amazon.S3;
 
 namespace Application.Services
 {
@@ -108,6 +111,7 @@ namespace Application.Services
                     Artist = song.Artist,
                     TrackDuration = song.TrackDuration,
                     Lyric = song.Lyric,
+                    ForigenKey = song.ForigenKey,
                     Genre = song.Genre,
                     ReleaseDate = song.ReleaseDate,
                 });
@@ -115,5 +119,25 @@ namespace Application.Services
 
             return result;
         }
+
+        public async Task<GetSongsMetaDataDTO?> GetSongMetadataByIdAsync(int songId)
+        {
+            var song = await _songRepository.GetByIdAsync(songId);
+
+            var result = new GetSongsMetaDataDTO{
+
+                Id = song.Id,
+                Name = song.Name,
+                Artist = song.Artist,
+                TrackDuration = song.TrackDuration,
+                Lyric = song.Lyric,
+                ForigenKey = song.ForigenKey,
+                Genre = song.Genre,
+                ReleaseDate = song.ReleaseDate,
+            };
+
+            return result;
+        }
+
     }
 }

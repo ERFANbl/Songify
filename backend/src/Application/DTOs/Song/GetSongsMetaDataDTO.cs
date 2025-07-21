@@ -13,6 +13,7 @@ namespace Application.DTOs.Song
         public string? Artist { get; set; }
         public TimeSpan TrackDuration { get; set; }
         public string? Lyric { get; set; }
+        public string? ForigenKey { get; set; }
         public string? Genre { get; set; }
         public string? ReleaseDate { get; set; }
     }

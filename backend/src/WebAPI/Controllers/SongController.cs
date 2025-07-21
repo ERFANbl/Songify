@@ -51,11 +51,19 @@ namespace WebAPI.Controllers
             return Ok();
         }
 
-        public async Task<IActionResult> GetAllSongsMetadata([FromRoute] int userId)
+        [Route("GetUploadedSongs/{userId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllUploadedSongsMetadata([FromRoute] int userId)
         {
-            var result = await _songService.GetAllSongsMetadataAsync(userId);
-
-            return Ok(result);
+            return Ok( await _songService.GetAllSongsMetadataAsync(userId) );
         }
+
+        [Route("GetSong/{songId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetSongMetadata([FromRoute] int songId)
+        {
+            return Ok(await _songService.GetSongMetadataByIdAsync(songId));
+        }
+
     }
 }

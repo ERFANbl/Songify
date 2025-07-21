@@ -15,5 +15,7 @@ namespace Application.Interfaces.Services
         public  Task<string> DeleteSongAsync(int userId, int songId);
 
         public Task<ICollection<GetSongsMetaDataDTO>?> GetAllSongsMetadataAsync(int userId);
+
+        public Task<GetSongsMetaDataDTO?> GetSongMetadataByIdAsync(int songId);
     }
 }
