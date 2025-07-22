@@ -16,8 +16,8 @@ services:
       - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=AppDb;Username=postgres;Password=P@ssw0rd!2025#Strong;
       - Redis__Configuration=redis:6379
 
-  database:
-    image: postgres:latest
+    database:
+    image: pgvector/pgvector:pg17  # Official pgvector image with Postgres 17 سایتشو بخون
     container_name: postgres_db
     environment:
       POSTGRES_USER: postgres
@@ -27,6 +27,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./pg-init:/docker-entrypoint-initdb.d  # Mount init scripts here این اسکریپت ها بعد از اولین بار که اینیشیال میشن ران میشن 
 
   redis:
     image: redis:7
