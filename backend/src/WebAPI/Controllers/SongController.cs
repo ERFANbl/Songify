@@ -65,5 +65,11 @@ namespace WebAPI.Controllers
             return Ok(await _songService.GetSongMetadataByIdAsync(songId));
         }
 
+        [Route("LikeSong/{userId}/{songId}")]
+        [HttpGet]
+        public async Task<IActionResult> LikeSong([FromRoute] int userId, [FromRoute] int songId)
+        {
+            return Ok(await _songService.LikeSongByIdAsync(userId, songId);
+        }
     }
 }

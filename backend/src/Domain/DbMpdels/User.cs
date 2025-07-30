@@ -11,6 +11,10 @@ namespace Domain.DbMpdels
         //Updated by Recommendation System 
         public string? MadeForUser { get; set; }
         public string? Token { get; set; }
+        public string FourWeekLogsJson { get; set; } = string.Empty;
+        public DateTime DateLimit { get; set; }
         public ICollection<Song> Songs { get; set; }
+        public ICollection<UserLikedSongs> LikedSongs { get; set; }
+
     }
 }
