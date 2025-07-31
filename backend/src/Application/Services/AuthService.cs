@@ -36,7 +36,8 @@ namespace Application.Services
             var user = new User
             {
                 Name = request.UserName,
-                PasswordHash = passwordHash
+                PasswordHash = passwordHash,
+                DateLimit = DateTime.UtcNow
             };
 
             // Save the user

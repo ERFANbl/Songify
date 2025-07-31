@@ -8,6 +8,7 @@ namespace EntityFrameworkCore.Configuration
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Song> Songs { get; set; }
+        public DbSet<UserLikedSongs> LikedSongs { get; set; }
 
 
         private readonly IConfiguration _configuration;
@@ -42,7 +43,17 @@ namespace EntityFrameworkCore.Configuration
                 .HasForeignKey(b => b.UserId);
 
             modelBuilder.Entity<User>()
+                .HasMany(a => a.LikedSongs)
+                .WithOne(b => b.User)
+                .HasForeignKey(b => b.UserId);
+
+            modelBuilder.Entity<User>()
                 .HasKey(x => x.Id);
+
+            modelBuilder.Entity<Song>()
+                .HasMany(a => a.LikedByUsers)
+                .WithOne(b => b.Song)
+                .HasForeignKey(b => b.SongId);
 
             modelBuilder.Entity<Song>()
                 .HasKey(x => x.Id);

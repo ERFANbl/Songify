@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Song;
+using Domain.DbMpdels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,10 @@ namespace Application.Interfaces.Services
     {
         public  Task<string> UploadSongAsync(byte[] audioData, UploadSongDTO song, int userId);
 
-        public  Task<string> DeleteSong(int userId, int songId);
+        public  Task<string> DeleteSongAsync(int userId, int songId);
+
+        public Task<ICollection<GetSongsMetaDataDTO>?> GetAllSongsMetadataAsync(int userId);
+
+        public Task<GetSongsMetaDataDTO?> GetSongMetadataByIdAsync(int songId);
     }
 }

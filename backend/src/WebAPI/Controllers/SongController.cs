@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
         [HttpPatch]
         public async Task<IActionResult> DeleteSong([FromRoute] int userId, [FromRoute] int songId)
         {
-            var result = await _songService.DeleteSong(userId, songId);
+            var result = await _songService.DeleteSongAsync(userId, songId);
             if (result == null)
             {
                 return BadRequest("couldn't find user");
@@ -49,6 +49,27 @@ namespace WebAPI.Controllers
             }
 
             return Ok();
+        }
+
+        [Route("GetUploadedSongs/{userId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllUploadedSongsMetadata([FromRoute] int userId)
+        {
+            return Ok( await _songService.GetAllSongsMetadataAsync(userId) );
+        }
+
+        [Route("GetSong/{songId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetSongMetadata([FromRoute] int songId)
+        {
+            return Ok(await _songService.GetSongMetadataByIdAsync(songId));
+        }
+
+        [Route("LikeSong/{userId}/{songId}")]
+        [HttpGet]
+        public async Task<IActionResult> LikeSong([FromRoute] int userId, [FromRoute] int songId)
+        {
+            return Ok(await _songService.LikeSongByIdAsync(userId, songId);
         }
     }
 }

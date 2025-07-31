@@ -16,6 +16,7 @@ namespace Domain.DbMpdels
         public bool is_deleted { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
+        public ICollection<UserLikedSongs> LikedByUsers { get; set; }
     }
 
 
