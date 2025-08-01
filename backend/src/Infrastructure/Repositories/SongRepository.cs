@@ -1,20 +1,16 @@
-﻿using Domain.DbMpdels;
+﻿using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Application.DTOs.Song;
+using Application.Interfaces;
+using Domain.DbMpdels;
 using EntityFrameworkCore.Configuration;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Interfaces;
 using Microsoft.Extensions.Configuration;
-using Amazon.Runtime;
-using Amazon.S3.Model;
-using Amazon.S3;
 
 namespace Infrastructure.Repositories;
 
-public class  SongRepository :  GenericRepository<Song> , ISongRepository
+public class SongRepository : GenericRepository<Song>, ISongRepository
 {
     IConfiguration _config;
     protected readonly SongifyDbContext _context;
@@ -52,14 +48,33 @@ public class  SongRepository :  GenericRepository<Song> , ISongRepository
         var response = await client.PutObjectAsync(putRequest);
     }
 
-    public async Task<ICollection<Song>?> GetUserSongsAsync(int userId)
+    public async Task<ICollection<GetSongsMetaDataDTO>?> GetUserSongsAsync(int userId)
     {
-        var user = await _context.Users
-            .Include(u => u.Songs)
-            .FirstOrDefaultAsync(u => u.Id == userId);
+        var userSongs = await _context.Users
+            .Include(e => e.Songs)
+            .Include(e => e.LikedSongs)
+            .Where(u => u.Id == userId)
+            .ToListAsync();
+
+        //TODO : Need explicit mapper 
+        var ResultSelector = userSongs.SelectMany(u => u.Songs
+            .Select(song => new GetSongsMetaDataDTO
+                {
+                    Id = song.Id,
+                    Name = song.Name,
+                    Artist = song.Artist,
+                    TrackDuration = song.TrackDuration,
+                    Lyric = song.Lyric,
+                    Genre = song.Genre,
+                    ReleaseDate = song.ReleaseDate,
+                    ForigenKey = song.ForigenKey,
+                    Isliked = u.LikedSongs.Any(Is => Is.SongId == song.Id)
+                }))
+            .ToList();
 
 
-        return user?.Songs ?? new List<Song>();
+
+        return ResultSelector ?? new List<GetSongsMetaDataDTO>();
     }
 }
 

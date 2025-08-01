@@ -9,34 +9,48 @@ services:
       - "8080:8080"
       - "8081:8081"
     depends_on:
-      - database
-      - redis
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=AppDb;Username=postgres;Password=P@ssw0rd!2025#Strong;
-      - Redis__Configuration=redis:6379
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=database;Port=5432;Database=AppDb;Username=postgres;Password=P@ssw0rd!2025#Strong;"
+      Redis__Configuration: "redis:6379"
+      ASPNETCORE_HTTP_PORTS: "8080;8081"  # Explicit HTTP ports for .NET 8
 
-    database:
-    image: pgvector/pgvector:pg17  # Official pgvector image with Postgres 17 سایتشو بخون
+  database:
+    image: pgvector/pgvector:pg17
     container_name: postgres_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: P@ssw0rd!2025#Strong
+      POSTGRES_PASSWORD: "P@ssw0rd!2025#Strong"
       POSTGRES_DB: AppDb
     ports:
-      - "5432:5432"
+      - "5433:5432"  # Changed host port to resolve conflict
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./pg-init:/docker-entrypoint-initdb.d  # Mount init scripts here این اسکریپت ها بعد از اولین بار که اینیشیال میشن ران میشن 
+      - ./pg-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   redis:
     image: redis:7
     container_name: redis_cache
     ports:
-      - "6379:6379"
+      - "6380:6379"  # Changed host port to avoid conflicts
     volumes:
       - redis_data:/data
+    command: redis-server --save 60 1 --loglevel warning
 
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  default:
+    name: app-network
+    driver: bridge

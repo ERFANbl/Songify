@@ -15,5 +15,14 @@ namespace Infrastructure.Repositories
         {
             return await _dbSet.FirstOrDefaultAsync(u => u.Name == username);
         }
+
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            return await _dbSet
+                .Include(u => u.LikedSongs)
+                .Include(u => u.Songs)
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
     }
 } 

@@ -1,9 +1,5 @@
-﻿using Domain.DbMpdels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.DTOs.Song;
+using Domain.DbMpdels;
 
 namespace Application.Interfaces
 {
@@ -11,7 +7,7 @@ namespace Application.Interfaces
     {
         public Task UploadToS3Async(byte[] songData, string fileName);
 
-        public Task<ICollection<Song>?> GetUserSongsAsync(int userId);
+        Task<ICollection<GetSongsMetaDataDTO>?> GetUserSongsAsync(int userId);
 
     }
 }
