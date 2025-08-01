@@ -69,7 +69,8 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> LikeSong([FromRoute] int userId, [FromRoute] int songId)
         {
-            return Ok(await _songService.LikeSongByIdAsync(userId, songId);
+            return Ok();
+            //return Ok(await _songService.LikeSongByIdAsync(userId, songId));
         }
     }
 }
