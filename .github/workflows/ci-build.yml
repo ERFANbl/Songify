@@ -1,31 +1,30 @@
-# .github/workflows/ci-build.yml
-
-name: Build and Test
+name: .NET 8 CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup .NET 9.0 SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.100-preview.7'  # Update this to latest preview if available
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore backend/backend.sln
+    - name: Restore dependencies
+      run: dotnet restore Songify/backend/backend.sln
 
-      - name: Build project
-        run: dotnet build backend/backend.sln --no-restore --configuration Release
+    - name: Build
+      run: dotnet build Songify/backend/backend.sln --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet test backend/backend.sln --no-build --verbosity normal
+    - name: Run tests
+      run: dotnet test Songify/backend/backend.sln --no-build --verbosity normal
