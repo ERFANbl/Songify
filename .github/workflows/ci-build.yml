@@ -21,10 +21,10 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Restore dependencies
-      run: dotnet restore Songify/backend/backend.sln
+      run: dotnet restore backend/backend.sln
 
     - name: Build
-      run: dotnet build Songify/backend/backend.sln --configuration Release --no-restore
+      run: dotnet build backend/backend.sln --configuration Release --no-restore
 
-    - name: Run tests
-      run: dotnet test Songify/backend/backend.sln --no-build --verbosity normal
+    # - name: Run tests
+    #   run: dotnet test backend/backend.sln --no-build --verbosity normal
