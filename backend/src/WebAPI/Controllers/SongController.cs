@@ -1,8 +1,5 @@
-﻿using Application.Interfaces.Services;
-using Application.DTOs.Song;
-using Application.Services;
-using Domain.DbMpdels;
-using Microsoft.AspNetCore.Http;
+﻿using Application.DTOs.Song;
+using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -20,13 +17,15 @@ namespace WebAPI.Controllers
 
         [Route("Upload/{userId}")]
         [HttpPost]
-        public async Task<IActionResult> UploadSong([FromBody] byte[] audioData, [FromBody] UploadSongDTO song,[FromRoute] int userId)
+        public async Task<IActionResult> UploadSong([FromBody] byte[] audioData, [FromBody] UploadSongDTO song, [FromRoute] int userId)
         {
-            if (audioData == null) {
+            if (audioData == null)
+            {
                 return BadRequest("no audio recived");
             }
 
-            if (song == null) {
+            if (song == null)
+            {
                 return BadRequest("no song data recived");
             }
 
@@ -55,7 +54,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUploadedSongsMetadata([FromRoute] int userId)
         {
-            return Ok( await _songService.GetAllSongsMetadataAsync(userId) );
+            return Ok(await _songService.GetAllSongsMetadataAsync(userId));
         }
 
         [Route("GetSong/{songId}")]
@@ -65,11 +64,13 @@ namespace WebAPI.Controllers
             return Ok(await _songService.GetSongMetadataByIdAsync(songId));
         }
 
+        
         [Route("LikeSong/{userId}/{songId}")]
         [HttpPut]
         public async Task<IActionResult> LikeSong([FromRoute] int userId, [FromRoute] int songId)
         {
-            return Ok(await _songService.LikeSongByIdAsync(userId, songId));
+            await _songService.LikeSong(userId, songId);
+            return Accepted();
         }
     }
 }

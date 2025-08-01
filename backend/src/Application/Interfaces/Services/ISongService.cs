@@ -17,5 +17,6 @@ namespace Application.Interfaces.Services
         public Task<ICollection<GetSongsMetaDataDTO>?> GetAllSongsMetadataAsync(int userId);
 
         public Task<GetSongsMetaDataDTO?> GetSongMetadataByIdAsync(int songId);
+        Task LikeSong(int userId, int songId);
     }
 }
