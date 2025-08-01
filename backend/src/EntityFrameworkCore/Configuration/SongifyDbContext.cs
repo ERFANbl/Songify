@@ -1,4 +1,5 @@
 ﻿using Domain.DbMpdels;
+using EntityFrameworkCore.Configuration.ModelsCreatingConfigHandle;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -22,13 +23,10 @@ namespace EntityFrameworkCore.Configuration
         {
             base.OnConfiguring(optionsBuilder);
 
-            // Check if options have been configured before
             if (!optionsBuilder.IsConfigured)
             {
-                // Get the connection string from environment variable or appsettings.json
                 var connectionString = _configuration.GetConnectionString("DefaultConnection");
 
-                // Use PostgreSQL as the database provider
                 optionsBuilder.UseNpgsql(connectionString);
             }
         }
@@ -42,21 +40,11 @@ namespace EntityFrameworkCore.Configuration
                 .WithOne(b => b.User)
                 .HasForeignKey(b => b.UserId);
 
-            modelBuilder.Entity<User>()
-                .HasMany(a => a.LikedSongs)
-                .WithOne(b => b.User)
-                .HasForeignKey(b => b.UserId);
-
-            modelBuilder.Entity<User>()
-                .HasKey(x => x.Id);
-
-            modelBuilder.Entity<Song>()
-                .HasMany(a => a.LikedByUsers)
-                .WithOne(b => b.Song)
-                .HasForeignKey(b => b.SongId);
-
             modelBuilder.Entity<Song>()
                 .HasKey(x => x.Id);
+
+            // Configure the UserLikedSongs entity
+            ConfigureUserLikedSongs.Apply(modelBuilder);
         }
     }
 }

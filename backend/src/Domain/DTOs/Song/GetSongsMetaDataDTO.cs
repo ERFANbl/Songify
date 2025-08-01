@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.DTOs.Song
+﻿namespace Application.DTOs.Song
 {
     public class GetSongsMetaDataDTO
     {
@@ -16,6 +10,6 @@ namespace Application.DTOs.Song
         public string? ForigenKey { get; set; }
         public string? Genre { get; set; }
         public string? ReleaseDate { get; set; }
-        public bool? Isliked { get; set; }
+        public bool Isliked { get; set; }
     }
 }

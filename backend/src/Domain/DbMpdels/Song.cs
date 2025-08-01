@@ -14,6 +14,8 @@ namespace Domain.DbMpdels
         public string? ReleaseDate { get; set; }
         public string? ForigenKey { get; set; }
         public bool is_deleted { get; set; }
+        
+        //User who upload the song
         public int UserId { get; set; }
         public User User { get; set; }
         public ICollection<UserLikedSongs> LikedByUsers { get; set; }

@@ -1,16 +1,8 @@
-﻿using Application.Interfaces.Services;
+﻿using Application.DTOs.Song;
 using Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs.Song;
+using Application.Interfaces.Services;
 using Domain.DbMpdels;
 using System.Net.Http.Headers;
-using Amazon.Runtime;
-using Amazon.S3.Model;
-using Amazon.S3;
 
 namespace Application.Services
 {
@@ -100,24 +92,7 @@ namespace Application.Services
         {
             var songs = await _songRepository.GetUserSongsAsync(userId);
 
-            ICollection<GetSongsMetaDataDTO> result = new List<GetSongsMetaDataDTO>();
-
-            foreach (var song in songs)
-            {
-                result.Add(new GetSongsMetaDataDTO
-                {
-                    Id = song.Id,
-                    Name = song.Name,
-                    Artist = song.Artist,
-                    TrackDuration = song.TrackDuration,
-                    Lyric = song.Lyric,
-                    ForigenKey = song.ForigenKey,
-                    Genre = song.Genre,
-                    ReleaseDate = song.ReleaseDate,
-                });
-            }
-
-            return result;
+            return songs;
         }
 
         public async Task<GetSongsMetaDataDTO?> GetSongMetadataByIdAsync(int songId)
@@ -137,6 +112,31 @@ namespace Application.Services
             };
 
             return result;
+        }
+
+        public async Task LikeSong(int userId , int songId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var song = await _songRepository.GetByIdAsync(songId);
+            if (song == null)
+                throw new Exception("Song not found");
+
+            if (song.LikedByUsers == null)
+                song.LikedByUsers = new List<UserLikedSongs>();
+
+            if (!song.LikedByUsers.Any(u => u.Id == userId))
+            {
+                song.LikedByUsers.Add(new UserLikedSongs()
+                {
+                    UserId = userId,
+                    SongId = songId
+                });
+                await _songRepository.UpdateAsync(song);
+                await _songRepository.SaveChangesAsync();
+            }
         }
 
     }
