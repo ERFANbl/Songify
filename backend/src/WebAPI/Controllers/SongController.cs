@@ -66,7 +66,7 @@ namespace WebAPI.Controllers
 
         
         [Route("LikeSong/{userId}/{songId}")]
-        [HttpGet]
+        [HttpPut]
         public async Task<IActionResult> LikeSong([FromRoute] int userId, [FromRoute] int songId)
         {
             await _songService.LikeSong(userId, songId);

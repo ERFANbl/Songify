@@ -1,4 +1,7 @@
+using Application.Interfaces.Services;
 using EntityFrameworkCore.Configuration;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -74,6 +77,18 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Add Hangfire
+builder.Services.AddHangfire(config =>
+{
+    config.UsePostgreSqlStorage(builder.Configuration.GetConnectionString("DefaultConnection"),
+        new PostgreSqlStorageOptions
+        {
+            SchemaName = "hangfire" 
+        });
+});
+
+builder.Services.AddHangfireServer();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -90,6 +105,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHangfireDashboard("/hangfire");
+
+RecurringJob.AddOrUpdate<IMadeForUserService>(
+    "Made-for-user",
+    service => service.UpdateWeeklyRecommendedSongs(),
+    Cron.Weekly(DayOfWeek.Sunday, 23)
+);
 
 app.Run();
 
