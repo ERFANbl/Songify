@@ -1,3 +1,5 @@
+# .github/workflows/ci-build.yml
+
 name: Build and Test
 
 on:
@@ -20,10 +22,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore Songify.sln
+        run: dotnet restore backend/backend.sln
 
       - name: Build project
-        run: dotnet build Songify.sln --no-restore --configuration Release
+        run: dotnet build backend/backend.sln --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test Songify.sln --no-build --verbosity normal
+        run: dotnet test backend/backend.sln --no-build --verbosity normal
