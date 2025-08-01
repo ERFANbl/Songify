@@ -40,7 +40,7 @@ namespace Application.Services
             formContent.Add(new StringContent(Id), "Id");
 
 
-            var response = await httpClient.PostAsync("http://python-service/process-audio", formContent);
+            var response = await httpClient.PostAsync("http://python-service/EncodeSong", formContent);
 
             return await response.Content.ReadAsStringAsync();
         }
