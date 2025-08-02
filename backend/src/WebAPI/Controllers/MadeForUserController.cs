@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Services;
+﻿using Application.DTOs.Song;
+using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,11 @@ namespace WebAPI.Controllers
             _mfuService = mfuService;
         }
 
-
+        [Route("GetAllRecomendedSongs/{userId}")]
+        [HttpGet]
+        public async Task<ActionResult<ICollection<GetSongsMetaDataDTO>>> GetAllRecomendedSongs(int userId)
+        {
+            return Ok( await _mfuService.GetWeeklyRecommendedSongsAsync(userId) );
+        }
     }
 }

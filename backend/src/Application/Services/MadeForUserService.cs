@@ -5,18 +5,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.DTOs.Song;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.Services
 {
     public class MadeForUserService : IMadeForUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly ISongRepository _songRepository;
+        private readonly IMadeForUserRepository _mfuRepository;
 
-        public MadeForUserService(IUserRepository userRepository, ITokenService tokenService, ISongRepository songRepository)
+        public MadeForUserService(IUserRepository userRepository, ITokenService tokenService, IMadeForUserRepository mfuRepository)
         {
             _userRepository = userRepository;
-            _songRepository = songRepository;
+            _mfuRepository = mfuRepository;
         }
 
         public async Task<string> CallApiForUser(string WeeklyLogs)
@@ -42,5 +44,17 @@ namespace Application.Services
             await _userRepository.SaveChangesAsync();
         }
 
+        public async Task<ICollection<GetSongsMetaDataDTO>?> GetWeeklyRecommendedSongsAsync(int userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            var MadeForYou = user.MadeForUser;
+
+            List<string> idList = MadeForYou.Split(',')
+                                            .ToList();
+
+            return await _mfuRepository.GetAllRecomendedSongsAsync(idList, userId);
+
+        }
     }
 }

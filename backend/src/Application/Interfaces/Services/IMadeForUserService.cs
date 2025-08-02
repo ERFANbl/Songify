@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.DTOs.Song;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,5 +10,6 @@ namespace Application.Interfaces.Services
     public interface IMadeForUserService
     {
         public Task UpdateWeeklyRecommendedSongs();
+        public Task<ICollection<GetSongsMetaDataDTO>?> GetWeeklyRecommendedSongsAsync(int userId);
     }
 }

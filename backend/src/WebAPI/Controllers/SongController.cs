@@ -17,9 +17,9 @@ namespace WebAPI.Controllers
 
         [Route("Upload/{userId}")]
         [HttpPost]
-        public async Task<IActionResult> UploadSong([FromBody] byte[] audioData, [FromBody] UploadSongDTO song, [FromRoute] int userId)
+        public async Task<IActionResult> UploadSong([FromBody] UploadSongDTO song, [FromRoute] int userId)
         {
-            if (audioData == null)
+            if (song.audioData == null)
             {
                 return BadRequest("no audio recived");
             }
@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
                 return BadRequest("no song data recived");
             }
 
-            return Ok(await _songService.UploadSongAsync(audioData, song, userId));
+            return Ok(await _songService.UploadSongAsync(song.audioData, song, userId));
         }
 
         [Route("Delete/{userId}/{songId}")]
