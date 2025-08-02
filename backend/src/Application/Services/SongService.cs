@@ -17,7 +17,7 @@ namespace Application.Services
             _songRepository = songRepository;
         }
 
-        public async Task<string> UploadToSongEncoderAsync(byte[] audioData, string genre,string releaseDate, string lyric, string Id)
+        public async Task<string> UploadToSongEncoderAsync(byte[] audioData, string genre, string releaseDate, string lyric, string Id)
         {
             using var httpClient = new HttpClient();
             using var formContent = new MultipartFormDataContent();
@@ -32,7 +32,7 @@ namespace Application.Services
             formContent.Add(new StringContent(Id), "Id");
 
 
-            var response = await httpClient.PostAsync("http://python-service/process-audio", formContent);
+            var response = await httpClient.PostAsync("http://python-service/EncodeSong", formContent);
 
             return await response.Content.ReadAsStringAsync();
         }
@@ -94,6 +94,8 @@ namespace Application.Services
 
             return songs;
         }
+
+        // TODO: Fill Is_Liked for DTO in this methode
 
         public async Task<GetSongsMetaDataDTO?> GetSongMetadataByIdAsync(int songId)
         {
