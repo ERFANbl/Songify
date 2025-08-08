@@ -16,6 +16,16 @@ namespace Application.Services
             _tokenService = tokenService;
         }
 
+        public async Task<string> InitialUserVector()
+        {
+            using var httpClient = new HttpClient();
+
+            var vectorKey = Guid.NewGuid().ToString();
+
+            await httpClient.PostAsync("", new StringContent(vectorKey));
+
+            return vectorKey;
+        }
         public async Task<AuthResponse> SignupAsync(SignupRequest request)
         {
             // Check if user already exists
@@ -32,11 +42,15 @@ namespace Application.Services
             // Hash the password
             string passwordHash = PasswordHasher.HashPassword(request.Password);
 
+            // Initial user vector
+            var UserVectorKey = await InitialUserVector();
+
             // Create new user
             var user = new User
             {
                 Name = request.UserName,
                 PasswordHash = passwordHash,
+                UserVectorId = UserVectorKey,
                 DateLimit = DateTime.UtcNow
             };
 

@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from transformers import AutoTokenizer, AutoModel
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
-from repository import SongEmbeddingRepository
+from Repositories.SongRepository import SongEmbeddingRepository
 from EncoderModel import SongModel
 from Preprocess import extract_audio_features, preprocess_metadata
 

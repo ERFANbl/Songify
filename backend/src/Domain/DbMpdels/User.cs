@@ -12,6 +12,7 @@ namespace Domain.DbMpdels
         public string? MadeForUser { get; set; }
         public string? Token { get; set; }
         public string FourWeekLogsJson { get; set; } = string.Empty;
+        public string  UserVectorId { get; set; }
         public DateTime DateLimit { get; set; }
         public ICollection<Song> Songs { get; set; }
         public ICollection<UserLikedSongs> LikedSongs { get; set; }
