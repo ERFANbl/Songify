@@ -8,3 +8,8 @@ CREATE TABLE SNGF_SongEmbeddings(
   id TEXT PRIMARY KEY,
   embedding vector(17)
 );
+
+CREATE TABLE SNGF_UserEmbeddings(
+  id TEXT PRIMARY KEY,
+  embedding vector(17)
+);

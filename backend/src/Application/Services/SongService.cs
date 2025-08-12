@@ -2,6 +2,8 @@
 using Application.Interfaces;
 using Application.Interfaces.Services;
 using Domain.DbMpdels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using System.Net.Http.Headers;
 
 namespace Application.Services
@@ -10,62 +12,68 @@ namespace Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly ISongRepository _songRepository;
+        private readonly IConfiguration _configService;
 
-        public SongService(IUserRepository userRepository, ITokenService tokenService, ISongRepository songRepository)
+        public SongService(IUserRepository userRepository, ITokenService tokenService, ISongRepository songRepository, IConfiguration configService)
         {
             _userRepository = userRepository;
             _songRepository = songRepository;
+            _configService = configService;
         }
 
-        public async Task<string> UploadToSongEncoderAsync(byte[] audioData, string genre, string releaseDate, string lyric, string Id)
+        private async Task<string> UploadToSongEncoderAsync(IFormFile audioFile, string genre, string releaseDate, string lyric, string audioKey)
         {
-            using var httpClient = new HttpClient();
-            using var formContent = new MultipartFormDataContent();
+            using var client = new HttpClient();
+            using var content = new MultipartFormDataContent();
 
-            var fileStreamContent = new StreamContent(new MemoryStream(audioData));
-            fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue("audio/mpeg");
+            // Add the file
+            var fileStream = audioFile.OpenReadStream();
+            var fileStreamContent = new StreamContent(fileStream);
+            fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(audioFile.ContentType);
+            content.Add(fileStreamContent, "audio_file", audioFile.FileName);
 
-            formContent.Add(fileStreamContent, "audio_file");
-            formContent.Add(new StringContent(genre), "genre");
-            formContent.Add(new StringContent(releaseDate), "releaseDate");
-            formContent.Add(new StringContent(lyric), "lyric");
-            formContent.Add(new StringContent(Id), "Id");
+            // Add the other form fields
+            content.Add(new StringContent(genre ?? ""), "genre");
+            content.Add(new StringContent(releaseDate ?? ""), "releaseDate");
+            content.Add(new StringContent(lyric ?? ""), "lyric");
+            content.Add(new StringContent(audioKey), "Id");
 
-
-            var response = await httpClient.PostAsync("http://python-service/EncodeSong", formContent);
-
+            // Send to Python service
+            var response = await client.PostAsync($"http://{_configService["RecommenderServices:EncoderService:Host"]}:{_configService["RecommenderServices:EncoderService:Port"]}/EncodeSong", content);
             return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task<string> UploadSongAsync(byte[] audioData, UploadSongDTO new_song, int userId)
+
+        public async Task<string> UploadSongAsync(UploadSongDTO newSong, int userId)
         {
             var audioKey = $"{Guid.NewGuid()}";
+
             var song = new Song
             {
-                Name = new_song.Name,
-                Artist = new_song.Artist,
-                TrackDuration = new_song.TrackDuration,
-                Lyric = new_song.Lyric,
-                Genre = new_song.Genre,
-                ReleaseDate = new_song.ReleaseDate,
+                Name = newSong.Name,
+                Artist = newSong.Artist,
+                TrackDuration = newSong.TrackDuration,
+                Lyric = newSong.Lyric,
+                Genre = newSong.Genre,
+                ReleaseDate = newSong.ReleaseDate,
                 ForigenKey = audioKey,
                 is_deleted = false,
                 UserId = userId
             };
 
-            var response = await UploadToSongEncoderAsync(audioData, song.Genre, song.ReleaseDate, song.Lyric, audioKey);
+            var response = await UploadToSongEncoderAsync(newSong.audioData, song.Genre, song.ReleaseDate, song.Lyric, audioKey);
 
-            // if (response == ...) 
-
-            await _songRepository.UploadToS3Async(audioData, audioKey + ".mp3");
+            using (var s3Stream = newSong.audioData.OpenReadStream())
+            {
+                await _songRepository.UploadToS3Async(s3Stream, audioKey + ".mp3");
+            }
 
             await _songRepository.AddAsync(song);
-
             await _songRepository.SaveChangesAsync();
 
-            return "Song saved succsessfully";
-
+            return "Song saved successfully";
         }
+
 
         public async Task<string?> DeleteSongAsync(int userId, int songId)
         {
@@ -97,23 +105,11 @@ namespace Application.Services
 
         // TODO: Fill Is_Liked for DTO in this methode
 
-        public async Task<GetSongsMetaDataDTO?> GetSongMetadataByIdAsync(int songId)
+        public async Task<GetSongsMetaDataDTO?> GetSongMetadataByIdAsync(int songId, int userId)
         {
-            var song = await _songRepository.GetByIdAsync(songId);
+            var song = await _songRepository.GetSongMetadataByIdAsync(songId, userId);
 
-            var result = new GetSongsMetaDataDTO{
-
-                Id = song.Id,
-                Name = song.Name,
-                Artist = song.Artist,
-                TrackDuration = song.TrackDuration,
-                Lyric = song.Lyric,
-                ForigenKey = song.ForigenKey,
-                Genre = song.Genre,
-                ReleaseDate = song.ReleaseDate,
-            };
-
-            return result;
+            return song;
         }
 
         public async Task LikeSong(int userId , int songId)

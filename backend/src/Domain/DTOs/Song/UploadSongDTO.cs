@@ -1,4 +1,6 @@
-﻿namespace Application.DTOs.Song
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Application.DTOs.Song
 {
     public class UploadSongDTO
     {
@@ -8,7 +10,7 @@
         public string? Lyric { get; set; }
         public string? Genre { get; set; }
         public string? ReleaseDate { get; set; }
-        public byte[] audioData { get; set; }
+        public IFormFile audioData { get; set; }
     }
 
 

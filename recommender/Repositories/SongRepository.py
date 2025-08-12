@@ -1,28 +1,32 @@
 from sqlalchemy import create_engine, Table, Column, TEXT, MetaData
-from sqlalchemy.dialects.postgresql import insert, select
-from pgvector.sqlalchemy import Vector, CosineDistance
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import select
+from pgvector.sqlalchemy import Vector 
 import numpy as np
 
 metadata = MetaData()
 
 song_embeddings = Table(
-    "SNGF_SongEmbeddings",
+    "sngf_songembeddings",
     metadata,
     Column("id", TEXT, primary_key=True),
-    Column("vector", Vector(17))
+    Column("embedding", Vector(17))
 )
 
 class SongEmbeddingRepository:
     def __init__(self, DATABASE_URL):
         self.engine = create_engine(DATABASE_URL)
 
-    def insert_vector(self, id: str, vector: np.ndarray):
+    def insert_vector(self, id: str, vector: list):
+      try:
         with self.engine.begin() as conn:
             stmt = insert(song_embeddings).values(
                 id=id,
-                vector=vector.tolist()
+                embedding=vector
             )
             conn.execute(stmt)
+      except Exception as e:
+          print(e)
 
     def find_similar_songs(self, id: str, num_neighbors: int) -> list:
         with self.engine.begin() as conn:
@@ -39,7 +43,7 @@ class SongEmbeddingRepository:
                 select(
                     song_embeddings.c.id,
                     song_embeddings.c.vector,
-                    CosineDistance(song_embeddings.c.vector, target_vector).label("distance")
+                    (song_embeddings.c.vector.op("<->")(target_vector)).label("distance")
                 )
                 .where(song_embeddings.c.id != id) 
                 .order_by("distance")
@@ -49,3 +53,4 @@ class SongEmbeddingRepository:
             results = conn.execute(stmt).fetchall()
 
             return [{"id": row[0], "vector": np.array(row[1], dtype=np.float32), "distance": row[2]} for row in results]
+        

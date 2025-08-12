@@ -1,33 +1,25 @@
 import os
-import io
-import numpy as np
-import pandas as pd
+import sys
 import torch
-import torch.nn as nn
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
-from Repositories.SongRepository import SongEmbeddingRepository
 from EncoderModel import SongModel
 from Preprocess import extract_audio_features, preprocess_metadata
 
-DATABASE_URL = "postgresql+psycopg2://postgres:P@ssw0rd!2025#Strong@localhost:5432/AppDb"
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from Repositories.SongRepository import SongEmbeddingRepository
 
-
-def load_model(checkpoint_path: str, device: torch.device = None) -> nn.Module:
-    if device is None:
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = SongModel().to(device)
-    if not os.path.isfile(checkpoint_path):
-        raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
-    state = torch.load(checkpoint_path, map_location=device)
-    model.load_state_dict(state)
-    model.eval()
-    return model
+DATABASE_URL = "postgresql://postgres:P%40ssw0rd%212025%23Strong@localhost:5433/AppDb"
 
 app = FastAPI()
-MODEL_CHECKPOINT = os.getenv('MODEL_CHECKPOINT', 'step_4475_train0.0025_val0.0057.pt')
-model = load_model(MODEL_CHECKPOINT)
-tokenizer = AutoTokenizer.from_pretrained("google/bigbird-roberta-base")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_CHECKPOINT = os.path.join(
+    BASE_DIR, "check_point", "Final_checkpoint"
+)
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = SongModel(MODEL_CHECKPOINT).to(device)
+tokenizer = AutoTokenizer.from_pretrained("D:\hi_again!\codes\Project\Songify\\recommender\EncoderService\check_point\\tokenizer")
 
 @app.post("/EncodeSong")
 async def EncodeSong(
@@ -39,8 +31,7 @@ async def EncodeSong(
 ):
     try:
         _repo = SongEmbeddingRepository(DATABASE_URL=DATABASE_URL)
-        raw = await audio_file.read()
-        audio_feats = extract_audio_features(raw)
+        audio_feats = extract_audio_features(audio_file)
         meta_feats  = preprocess_metadata(genre, releaseDate)
 
         tokens = tokenizer(lyric, return_tensors='pt', padding='max_length', truncation=True)
@@ -55,6 +46,7 @@ async def EncodeSong(
 
         with torch.no_grad():
             out = model(input_ids, attention_mask, audio_feats, meta_feats)
+            print(out, out.size())
         vector = out.squeeze(0).cpu().tolist()
 
         _repo.insert_vector(id=Id, vector=vector)
@@ -62,9 +54,9 @@ async def EncodeSong(
         return {"status": "200", "message": "Vector saved successfully"}
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
+    uvicorn.run(app, host="127.0.0.1", port=8000)

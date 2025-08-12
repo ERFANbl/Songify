@@ -19,11 +19,15 @@ namespace Infrastructure
             // Add repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ISongRepository, SongRepository>();
+            services.AddScoped<IMadeForUserRepository, MadeForUserRepository>();
+            services.AddScoped<IStreamRepository, StreamRepository>();
             
             // Add services
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ISongService, SongService>();
+            services.AddScoped<IMadeForUserService, MadeForUserService>();
+            services.AddScoped<IStreamService, StreamService>();
             
             return services;
         }

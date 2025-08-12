@@ -29,12 +29,12 @@ async def MadeForUser(
     try:
         uniqeSongVectorIds = extract_unique_song_vectors(WeeklySongsLogs)
         recommendedsongs = RecommendSong(UserVectorId, uniqeSongVectorIds, num_recommend=5)
-        return recommendedsongs
+        return str(recommendedsongs[:20])[2:-2]
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8002)
+    uvicorn.run(app, host="127.0.0.1", port=8002)
 

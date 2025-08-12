@@ -206,6 +206,7 @@ ClientBin/
 *.jfm
 *.pfx
 *.publishsettings
+recommender/EncoderService/check_point/*
 orleans.codegen.cs
 
 # Including strong name files can present a security risk

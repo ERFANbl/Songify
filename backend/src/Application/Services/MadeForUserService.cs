@@ -54,8 +54,14 @@ namespace Application.Services
 
             var MadeForYou = user.MadeForUser;
 
-            List<string> idList = MadeForYou.Split(',')
-                                            .ToList();
+            List<string> idList;
+            if (MadeForYou != null)
+            {
+                idList = MadeForYou.Split(',')
+                                   .ToList();
+            }
+            else 
+                idList = new List<string>();
 
             return await _mfuRepository.GetAllRecomendedSongsAsync(idList, userId);
 

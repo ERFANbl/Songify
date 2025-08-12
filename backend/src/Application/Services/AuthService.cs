@@ -2,6 +2,7 @@ using Application.DTOs.Auth;
 using Application.Interfaces;
 using Application.Interfaces.Services;
 using Domain.DbMpdels;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Services
 {
@@ -9,11 +10,13 @@ namespace Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly ITokenService _tokenService;
+        private readonly IConfiguration _configService;
 
-        public AuthService(IUserRepository userRepository, ITokenService tokenService)
+        public AuthService(IUserRepository userRepository, ITokenService tokenService, IConfiguration configService)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
+            _configService = configService;
         }
 
         public async Task<string> InitialUserVector()
@@ -22,7 +25,7 @@ namespace Application.Services
 
             var vectorKey = Guid.NewGuid().ToString();
 
-            await httpClient.PostAsync("", new StringContent(vectorKey));
+            await httpClient.PostAsync($"http://{_configService["RecommenderServices:UserVectorService:Host"]}:{_configService["RecommenderServices:UserVectorService:Port"]}/InitialUserVector/{vectorKey}", new StringContent(vectorKey));
 
             return vectorKey;
         }

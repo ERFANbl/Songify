@@ -6,29 +6,30 @@ import numpy as np
 metadata = MetaData()
 
 user_embeddings = Table(
-    "SNGF_UserEmbeddings",
+    "sngf_userembeddings",
     metadata,
     Column("id", TEXT, primary_key=True),
-    Column("vector", Vector(17))
+    Column("embedding", Vector(17))
 )
 
 class UserEmbeddingRepository:
     def __init__(self, DATABASE_URL):
         self.engine = create_engine(DATABASE_URL)
 
-    def initial_vector(self, id: int):
+    def initial_vector(self, id: str):
         with self.engine.begin() as conn:
             vectors = conn.execute(user_embeddings.select())
+            rows = vectors.fetchall()
 
-            if vectors:
-                vector_array = np.array(vectors["vector"])
+            if rows:
+                vector_array = np.array([row.embedding for row in rows])
                 mean_vector = vector_array.mean(axis=0)
             else:
                 mean_vector = np.zeros(17, dtype=np.float32)
 
             stmt = insert(user_embeddings).values(
                 id=id,
-                vector=mean_vector.tolist()
+                embedding=mean_vector.tolist()
             )
             conn.execute(stmt)
 
@@ -37,9 +38,7 @@ class UserEmbeddingRepository:
             query = user_embeddings.select().where(user_embeddings.c.id == id)
             result = conn.execute(query).fetchone()
 
-            if result and result["vector"] is not None:
-                return np.array(result["vector"], dtype=np.float32)
+            if result and result["embedding"] is not None:
+                return np.array(result["embedding"], dtype=np.float32)
             else:
                 return None
-
-       
