@@ -1,10 +1,5 @@
-﻿using Application.Interfaces;
-using Application.Interfaces.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Infrastructure.Interfaces;
+using Infrastructure.Interfaces.Services;
 
 namespace Application.Services
 {

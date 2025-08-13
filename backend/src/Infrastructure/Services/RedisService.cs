@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Songify.Domain.Interfaces;
 using StackExchange.Redis;
 
@@ -6,19 +5,17 @@ namespace Infrastructure.Services
 {
     public class RedisService : IRedisService
     {
-        private readonly IConnectionMultiplexer _redis;
         private readonly IDatabase _database;
 
-        public RedisService(IConfiguration configuration)
+        public RedisService(IConnectionMultiplexer connectionMultiplexer)
         {
-            var config = configuration.GetSection("Redis")["Configuration"];
-            _redis = ConnectionMultiplexer.Connect(config);
-            _database = _redis.GetDatabase();
+            _database = connectionMultiplexer.GetDatabase();
         }
 
-        public async Task<string> GetAsync(string key)
+        public async Task<string?> GetAsync(string key)
         {
-            return await _database.StringGetAsync(key);
+            var value = await _database.StringGetAsync(key);
+            return value.HasValue ? value.ToString() : null;
         }
 
         public async Task SetAsync(string key, string value, TimeSpan? expiry = null)
@@ -36,4 +33,5 @@ namespace Infrastructure.Services
             return await _database.KeyExistsAsync(key);
         }
     }
-} 
+
+}

@@ -1,8 +1,9 @@
 using Application.DTOs.Auth;
-using Application.Interfaces.Services;
+using Infrastructure.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebAPI.AuthLayer;
 
 namespace WebAPI.Controllers
 {
@@ -75,5 +76,16 @@ namespace WebAPI.Controllers
             
             return BadRequest(new { Message = "Failed to logout" });
         }
+
+        [Authenticate]  
+        [HttpGet("profile")]
+        public IActionResult GetProfile()
+        {
+            var userId = HttpContext.Items["UserId"] as int?;
+            if (userId == null) return Unauthorized();
+
+            return Ok(new { UserId = userId, Message = "You are authenticated!" });
+        }
+
     }
 } 

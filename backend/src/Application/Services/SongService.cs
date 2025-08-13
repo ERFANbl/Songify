@@ -1,10 +1,10 @@
 ﻿using Application.DTOs.Song;
-using Application.Interfaces;
-using Application.Interfaces.Services;
 using Domain.DbMpdels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Headers;
+using Infrastructure.Interfaces;
+using Infrastructure.Interfaces.Services;
 
 namespace Application.Services
 {

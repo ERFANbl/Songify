@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
-namespace Application.Interfaces
+namespace Infrastructure.Interfaces
 {
     public interface IRepository<T> where T : class
     {

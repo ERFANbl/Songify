@@ -17,7 +17,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=database;Port=5432;Database=AppDb;Username=postgres;Password=P@ssw0rd!2025#Strong;"
       Redis__Configuration: "redis:6379"
-      ASPNETCORE_HTTP_PORTS: "8080;8081"  # Explicit HTTP ports for .NET 8
+      ASPNETCORE_HTTP_PORTS: "8080;8081"  
 
   database:
     image: pgvector/pgvector:pg17
@@ -27,7 +27,7 @@ services:
       POSTGRES_PASSWORD: "P@ssw0rd!2025#Strong"
       POSTGRES_DB: AppDb
     ports:
-      - "5433:5432"  # Changed host port to resolve conflict
+      - "5433:5432"  
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./pg-init:/docker-entrypoint-initdb.d
@@ -41,7 +41,7 @@ services:
     image: redis:7
     container_name: redis_cache
     ports:
-      - "6380:6379"  # Changed host port to avoid conflicts
+      - "6380:6379"
     volumes:
       - redis_data:/data
     command: redis-server --save 60 1 --loglevel warning

@@ -1,5 +1,5 @@
 ﻿using Application.DTOs.Song;
-using Application.Interfaces.Services;
+using Infrastructure.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers

@@ -1,5 +1,5 @@
-using Application.Interfaces.Services;
 using Domain.DbMpdels;
+using Infrastructure.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -46,5 +46,7 @@ namespace Application.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
     }
 } 

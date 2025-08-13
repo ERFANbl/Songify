@@ -1,7 +1,7 @@
 ﻿using Application.DTOs.Song;
 using Domain.DbMpdels;
 
-namespace Application.Interfaces
+namespace Infrastructure.Interfaces
 {
     public interface ISongRepository : IRepository<Song>
     {

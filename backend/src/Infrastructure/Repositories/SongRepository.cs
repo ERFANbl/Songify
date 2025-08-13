@@ -2,9 +2,9 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using Application.DTOs.Song;
-using Application.Interfaces;
 using Domain.DbMpdels;
 using EntityFrameworkCore.Configuration;
+using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 

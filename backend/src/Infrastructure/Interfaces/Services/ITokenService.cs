@@ -1,6 +1,7 @@
+using Application.DTOs.Auth;
 using Domain.DbMpdels;
 
-namespace Application.Interfaces.Services
+namespace Infrastructure.Interfaces.Services
 {
     public interface ITokenService
     {

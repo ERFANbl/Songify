@@ -1,10 +1,8 @@
-using Application.Interfaces;
-using Application.Interfaces.Services;
 using Application.Services;
+using Infrastructure.Interfaces;
+using Infrastructure.Interfaces.Services;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Songify.Domain.Interfaces;
 
 namespace Infrastructure
@@ -28,7 +26,8 @@ namespace Infrastructure
             services.AddScoped<ISongService, SongService>();
             services.AddScoped<IMadeForUserService, MadeForUserService>();
             services.AddScoped<IStreamService, StreamService>();
-            
+            services.AddScoped<IUserServices, UserServices>();
+
             return services;
         }
     }
