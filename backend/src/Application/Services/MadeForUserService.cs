@@ -1,12 +1,6 @@
-﻿using Application.Interfaces.Services;
-using Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs.Song;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Application.DTOs.Song;
+using Infrastructure.Interfaces;
+using Infrastructure.Interfaces.Services;
 
 namespace Application.Services
 {

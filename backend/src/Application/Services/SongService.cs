@@ -1,7 +1,7 @@
 ﻿using Application.DTOs.Song;
-using Application.Interfaces;
-using Application.Interfaces.Services;
 using Domain.DbMpdels;
+using Infrastructure.Interfaces;
+using Infrastructure.Interfaces.Services;
 using System.Net.Http.Headers;
 
 namespace Application.Services

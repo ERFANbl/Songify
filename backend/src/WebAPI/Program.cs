@@ -1,8 +1,8 @@
-using Application.Interfaces.Services;
 using EntityFrameworkCore.Configuration;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Infrastructure;
+using Infrastructure.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -49,12 +49,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Add Swagger generation
+builder.Services.AddRedis(builder.Configuration);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Songify API", Version = "v1" });
-    
+
     // Add JWT authentication to Swagger
     c.AddSecurityDefinition("Bearer", new()
     {
@@ -64,7 +65,7 @@ builder.Services.AddSwaggerGen(c =>
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-    
+
     c.AddSecurityRequirement(new()
     {
         {
@@ -77,13 +78,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Add Hangfire
+
 builder.Services.AddHangfire(config =>
 {
     config.UsePostgreSqlStorage(builder.Configuration.GetConnectionString("DefaultConnection"),
         new PostgreSqlStorageOptions
         {
-            SchemaName = "hangfire" 
+            SchemaName = "hangfire"
         });
 });
 
@@ -91,12 +92,13 @@ builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();  // Generates the Swagger JSON documentation
-    app.UseSwaggerUI();  // Serves the Swagger UI (interactive docs page)
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+//app.UseDependencyHealthCheck();
 
 app.UseHttpsRedirection();
 

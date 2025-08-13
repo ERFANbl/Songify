@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Interfaces.Services
+namespace Infrastructure.Interfaces.Services
 {
     public interface IMadeForUserService
     {

@@ -1,15 +1,8 @@
 ﻿using Amazon.Runtime;
-using Amazon.S3.Model;
 using Amazon.S3;
-using Application.Interfaces;
-using Domain.DbMpdels;
-using EntityFrameworkCore.Configuration;
+using Amazon.S3.Model;
+using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {

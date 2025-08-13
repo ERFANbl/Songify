@@ -1,7 +1,7 @@
 using Application.DTOs.Auth;
-using Application.Interfaces;
-using Application.Interfaces.Services;
 using Domain.DbMpdels;
+using Infrastructure.Interfaces;
+using Infrastructure.Interfaces.Services;
 
 namespace Application.Services
 {
