@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 		<Folder Include="Configuration\Seed\" />
+		<Folder Include="Migrations\" />
 	</ItemGroup>
 
 </Project>

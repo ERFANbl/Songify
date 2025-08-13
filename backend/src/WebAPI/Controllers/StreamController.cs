@@ -18,18 +18,29 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> Stream([FromRoute] string fileKey)
         {
-            var range = Request.Headers["Range"].ToString();
+            var rangeHeader = Request.Headers["Range"].ToString();
 
-            var (stream, start, end, total) = await _streamService.GetAudioChunkAsync(fileKey, range);
+            // If no range header, force the first chunk
+            if (string.IsNullOrEmpty(rangeHeader))
+            {
+                // You can adjust this chunk size (here: first 1 MB)
+                long chunkSize = 1 * 1024 * 1024; // 1 MB
+                rangeHeader = $"bytes=0-{chunkSize - 1}";
+            }
 
-            Response.StatusCode = StatusCodes.Status206PartialContent;
+            var (stream, start, end, total) = await _streamService.GetAudioChunkAsync(fileKey, rangeHeader);
+
             Response.ContentType = "audio/mpeg";
-            Response.ContentLength = end - start + 1;
             Response.Headers.Add("Accept-Ranges", "bytes");
+
+            // Always partial content now
+            Response.StatusCode = StatusCodes.Status206PartialContent;
+            Response.ContentLength = end - start + 1;
             Response.Headers.Add("Content-Range", $"bytes {start}-{end}/{total}");
 
             await stream.CopyToAsync(Response.Body);
             return new EmptyResult();
         }
+
     }
 }

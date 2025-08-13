@@ -15,11 +15,15 @@ namespace Application.Services
             _mfuRepository = mfuRepository;
         }
 
-        public async Task<string> CallApiForUser(string WeeklyLogs)
+        public async Task<string> CallApiMadeForUser(string WeeklyLogs, string UserVectorId)
         {
             using var httpClient = new HttpClient();
+            using var formContent = new MultipartFormDataContent();
 
-            var response = await httpClient.PostAsync("", new StringContent(WeeklyLogs));
+            formContent.Add(new StringContent(WeeklyLogs), "WeeklyLogs");
+            formContent.Add(new StringContent(UserVectorId), "UserVectorId");
+
+            var response = await httpClient.PostAsync("", formContent);
 
             return await response.Content.ReadAsStringAsync();
         }
@@ -30,7 +34,7 @@ namespace Application.Services
 
             foreach (var user in users)
             {
-                var result = await CallApiForUser(user.FourWeekLogsJson);
+                var result = await CallApiMadeForUser(user.FourWeekLogsJson, user.UserVectorId);
                 user.MadeForUser = result;
                 await _userRepository.UpdateAsync(user);
             }
@@ -44,8 +48,14 @@ namespace Application.Services
 
             var MadeForYou = user.MadeForUser;
 
-            List<string> idList = MadeForYou.Split(',')
-                                            .ToList();
+            List<string> idList;
+            if (MadeForYou != null)
+            {
+                idList = MadeForYou.Split(',')
+                                   .ToList();
+            }
+            else 
+                idList = new List<string>();
 
             return await _mfuRepository.GetAllRecomendedSongsAsync(idList, userId);
 

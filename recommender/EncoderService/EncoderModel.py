@@ -1,64 +1,32 @@
-import os
-import io
-import numpy as np
-import pandas as pd
 import torch
 import torch.nn as nn
-from transformers import AutoTokenizer, AutoModel
-from peft import LoraConfig, get_peft_model, PeftModel
+from transformers import AutoModel
+
+import torch.nn as nn
+from transformers import AutoModel
 
 class LyricsEncoder(nn.Module):
-    _tokenizer_cache = {}
     _base_model_cache = {}
 
-    def __init__(
-        self,
-        base_path="/content/drive/MyDrive/models/BigBird/",
-        lora_path=None,  
-        lora_r=16
-    ):
+    def __init__(self, base_path):
         super().__init__()
-
         self.base_path = base_path
-        self.lora_path = lora_path
-
-        if not os.path.isdir(base_path):
-            tokenizer = AutoTokenizer.from_pretrained("google/bigbird-roberta-base")
-            model     = AutoModel.from_pretrained("google/bigbird-roberta-base")
-            os.makedirs(base_path, exist_ok=True)
-            tokenizer.save_pretrained(base_path)
-            model.save_pretrained(base_path)
-
-        if base_path in LyricsEncoder._tokenizer_cache:
-            self.tokenizer = LyricsEncoder._tokenizer_cache[base_path]
-        else:
-            tok = AutoTokenizer.from_pretrained(base_path)
-            LyricsEncoder._tokenizer_cache[base_path] = tok
-            self.tokenizer = tok
 
         if base_path in LyricsEncoder._base_model_cache:
-            base_model = LyricsEncoder._base_model_cache[base_path]
+            self.model = LyricsEncoder._base_model_cache[base_path]
         else:
             mdl = AutoModel.from_pretrained(base_path)
             LyricsEncoder._base_model_cache[base_path] = mdl
-            base_model = mdl
-
-        if self.lora_path and os.path.isdir(self.lora_path):
-            self.model = PeftModel.from_pretrained(base_model, self.lora_path)
-        else:
-            peft_conf = LoraConfig(
-                task_type="FEATURE_EXTRACTION",
-                r=lora_r, lora_alpha=32,
-                target_modules=["query", "value"]
-            )
-            self.model = get_peft_model(base_model, peft_conf)
+            self.model = mdl
 
     def forward(self, input_ids, attention_mask):
-        out = self.model(input_ids=input_ids,
-                         attention_mask=attention_mask,
-                         return_dict=True)
-
+        out = self.model(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            return_dict=True
+        )
         return out.last_hidden_state[:, 0]
+
 
 
 class AudioEncoder(nn.Module):
@@ -123,9 +91,9 @@ class RegressionHead(nn.Module):
 
 
 class SongModel(nn.Module):
-    def __init__(self):
+    def __init__(self, base_path):
         super().__init__()
-        self.lyrics_enc = LyricsEncoder()
+        self.lyrics_enc = LyricsEncoder(base_path)
         self.audio_enc  = AudioEncoder()
         self.meta_enc   = MetadataEncoder()
         self.fusion     = FusionMLP()

@@ -20,7 +20,7 @@ public class SongRepository : GenericRepository<Song>, ISongRepository
         _context = context;
     }
 
-    public async Task UploadToS3Async(byte[] songData, string fileName)
+    public async Task UploadToS3Async(Stream songStream, string fileName)
     {
         var accessKey = _config["S3:AccessKey"];
         var secretKey = _config["S3:SecretKey"];
@@ -31,7 +31,6 @@ public class SongRepository : GenericRepository<Song>, ISongRepository
         {
             ServiceURL = serviceUrl,
             ForcePathStyle = true,
-            RegionEndpoint = Amazon.RegionEndpoint.USEast1,
         };
 
         var credentials = new BasicAWSCredentials(accessKey, secretKey);
@@ -41,12 +40,13 @@ public class SongRepository : GenericRepository<Song>, ISongRepository
         {
             BucketName = bucket,
             Key = fileName,
-            InputStream = new MemoryStream(songData),
+            InputStream = songStream,
             ContentType = "audio/mpeg"
         };
 
-        var response = await client.PutObjectAsync(putRequest);
+        await client.PutObjectAsync(putRequest);
     }
+
 
     public async Task<ICollection<GetSongsMetaDataDTO>?> GetUserSongsAsync(int userId)
     {
@@ -72,9 +72,36 @@ public class SongRepository : GenericRepository<Song>, ISongRepository
                 }))
             .ToList();
 
-
-
         return ResultSelector ?? new List<GetSongsMetaDataDTO>();
+    }
+
+    public async Task<GetSongsMetaDataDTO?> GetSongMetadataByIdAsync(int songId, int userId)
+    {
+        var user = await _context.Users
+            .Include(e => e.Songs)
+            .Include(e => e.LikedSongs)
+            .Where(u => u.Id == userId)
+            .FirstOrDefaultAsync();
+
+        var song = await _context.Songs
+             .Where(u => u.Id == songId)
+             .FirstOrDefaultAsync();
+
+        //TODO : Need explicit mapper 
+        var result = new GetSongsMetaDataDTO
+        {
+            Id = song.Id,
+            Name = song.Name,
+            Artist = song.Artist,
+            TrackDuration = song.TrackDuration,
+            Lyric = song.Lyric,
+            Genre = song.Genre,
+            ReleaseDate = song.ReleaseDate,
+            ForigenKey = song.ForigenKey,
+            Isliked = user.LikedSongs.Any(Is => Is.SongId == song.Id)
+        };
+
+        return result ?? new GetSongsMetaDataDTO();
     }
 }
 

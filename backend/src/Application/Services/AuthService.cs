@@ -1,5 +1,6 @@
 using Application.DTOs.Auth;
 using Domain.DbMpdels;
+using Microsoft.Extensions.Configuration;
 using Infrastructure.Interfaces;
 using Infrastructure.Interfaces.Services;
 
@@ -9,13 +10,25 @@ namespace Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly ITokenService _tokenService;
+        private readonly IConfiguration _configService;
 
-        public AuthService(IUserRepository userRepository, ITokenService tokenService)
+        public AuthService(IUserRepository userRepository, ITokenService tokenService, IConfiguration configService)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
+            _configService = configService;
         }
 
+        public async Task<string> InitialUserVector()
+        {
+            using var httpClient = new HttpClient();
+
+            var vectorKey = Guid.NewGuid().ToString();
+
+            await httpClient.PostAsync($"http://{_configService["RecommenderServices:UserVectorService:Host"]}:{_configService["RecommenderServices:UserVectorService:Port"]}/InitialUserVector/{vectorKey}", new StringContent(vectorKey));
+
+            return vectorKey;
+        }
         public async Task<AuthResponse> SignupAsync(SignupRequest request)
         {
             // Check if user already exists
@@ -32,11 +45,15 @@ namespace Application.Services
             // Hash the password
             string passwordHash = PasswordHasher.HashPassword(request.Password);
 
+            // Initial user vector
+            var UserVectorKey = await InitialUserVector();
+
             // Create new user
             var user = new User
             {
                 Name = request.UserName,
                 PasswordHash = passwordHash,
+                UserVectorId = UserVectorKey,
                 DateLimit = DateTime.UtcNow
             };
 

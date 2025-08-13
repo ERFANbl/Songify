@@ -25,13 +25,12 @@ namespace Infrastructure.Repositories
             {
                 ServiceURL = serviceUrl,
                 ForcePathStyle = true,
-                RegionEndpoint = Amazon.RegionEndpoint.USEast1,
             };
 
             var credentials = new BasicAWSCredentials(accessKey, secretKey);
             using var client = new AmazonS3Client(credentials, s3Config);
 
-            var metadata = await client.GetObjectMetadataAsync(bucket, fileName);
+            var metadata = await client.GetObjectMetadataAsync(bucket, fileName+".mp3");
             var totalSize = metadata.ContentLength;
 
             long start = 0;
@@ -48,7 +47,7 @@ namespace Infrastructure.Repositories
             var request = new GetObjectRequest
             {
                 BucketName = bucket,
-                Key = fileName,
+                Key = fileName+".mp3",
                 ByteRange = new ByteRange(start, end)
             };
 
