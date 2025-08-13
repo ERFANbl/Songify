@@ -17,9 +17,12 @@ MODEL_CHECKPOINT = os.path.join(
     BASE_DIR, "check_point", "Final_checkpoint"
 )
 
+TOKENIZER_CHECKPOINT = os.path.join(
+    BASE_DIR, "check_point", "tokenizer"
+)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = SongModel(MODEL_CHECKPOINT).to(device)
-tokenizer = AutoTokenizer.from_pretrained("D:\hi_again!\codes\Project\Songify\\recommender\EncoderService\check_point\\tokenizer")
+tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_CHECKPOINT)
 
 @app.post("/EncodeSong")
 async def EncodeSong(
