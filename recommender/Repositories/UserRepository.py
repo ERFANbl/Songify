@@ -42,3 +42,14 @@ class UserEmbeddingRepository:
                 return np.array(result["embedding"], dtype=np.float32)
             else:
                 return None
+            
+    def set_vector_by_id(self, id:str, vector:np.ndarray):
+        with self.engine.begin as conn:
+
+            stmt = (
+            user_embeddings.update()
+            .where(user_embeddings.c.id == id)
+            .values(embedding=vector.tolist())
+            )
+
+            conn.execute(stmt)
