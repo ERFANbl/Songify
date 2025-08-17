@@ -27,6 +27,7 @@ namespace Infrastructure
             services.AddScoped<IMadeForUserService, MadeForUserService>();
             services.AddScoped<IStreamService, StreamService>();
             services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<IUserVectorService, UserVectorService>();
 
             return services;
         }

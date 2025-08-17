@@ -24,7 +24,7 @@ def score(weekly_log: str, latest_log: str) -> list:
     latest = json.loads(latest_log)
     songs_with_scores = []
     weekly_weights = [1, 0.75, 0.5, 0.25]
-    alpha = 3  
+    alpha = 1.5  
     beta = 1
     
     for song_key, song_info in latest.items():
@@ -98,7 +98,7 @@ class UserVectorController:
 
             weights = torch.from_numpy(userVector.reshape((1,17))).float()
 
-            model = nn.Linear(in_features=17,out_features=1,bias=False)
+            model = nn.Linear(in_features=17,out_features=1,bias=False).float()
 
             with torch.no_grad():
                 model.weight.data = weights
@@ -106,12 +106,12 @@ class UserVectorController:
             criterion = nn.MSELoss()  
             optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-            input = torch.from_numpy(song_vectors)
-            labels = torch.from_numpy(songs_with_scores["score"].to_numpy())
+            input = torch.from_numpy(song_vectors).float()
+            labels = torch.from_numpy(songs_with_scores["score"].to_numpy()).float()
 
             updated_vector = online_update(model=model,optimizer=optimizer,criterion=criterion,input=input,labels=labels)
 
-            self._userRepo.set_vector_by_id(updated_vector.reshape(17))
+            self._userRepo.set_vector_by_id(id=userVectorId,vector=updated_vector.reshape(17))
 
 
 
