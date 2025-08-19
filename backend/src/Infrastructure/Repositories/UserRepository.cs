@@ -11,9 +11,11 @@ namespace Infrastructure.Repositories
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
         private readonly IRedisService _redisService;
+        private readonly SongifyDbContext _context;
         public UserRepository(SongifyDbContext context, IRedisService redisService) : base(context)
         {
             _redisService = redisService;
+            _context = context;
         }
 
         public async Task<User?> GetByUsernameAsync(string username)
@@ -60,6 +62,17 @@ namespace Infrastructure.Repositories
             return user.Id;
         }
 
+        public async Task UpdateWeeklyLogsAsync(int userId, string weeklyLogs)
+        {
+            var user = await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+            if (user == null)
+                throw new Exception("User Not Found");
+
+            user.FourWeekLogsJson = weeklyLogs;
+
+            await _context.SaveChangesAsync();
+        }
 
     }
 } 

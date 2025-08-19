@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy import select
 from pgvector.sqlalchemy import Vector 
 import numpy as np
+from typing import List, Dict, Optional
 
 metadata = MetaData()
 
@@ -53,4 +54,28 @@ class SongEmbeddingRepository:
             results = conn.execute(stmt).fetchall()
 
             return [{"id": row[0], "vector": np.array(row[1], dtype=np.float32), "distance": row[2]} for row in results]
+    
+    
+    def get_vectors_by_ids(self, ids: List[str]) -> np.ndarray:
+
+        if not ids:
+            return {}
+            
+        with self.engine.begin() as conn:
+            stmt = select(
+                song_embeddings.c.id,
+                song_embeddings.c.embedding
+            ).where(
+                song_embeddings.c.id.in_(ids)
+            )
+            
+            results = conn.execute(stmt).fetchall()
+            
+            vector_map = {row[0]: np.array(row[1], dtype=np.float32) for row in results}
+            
+            vectors = []
+            for id in ids:
+                vectors.append(vector_map.get(id))
+            
+            return np.array(vectors, dtype=float)
         

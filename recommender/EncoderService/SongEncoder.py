@@ -26,11 +26,11 @@ tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_CHECKPOINT)
 
 @app.post("/EncodeSong")
 async def EncodeSong(
-    audio_file: UploadFile = File(...),
-    genre: str = Form(...),
-    releaseDate: str = Form(...),
-    lyric: str = Form(...),
-    Id: str = Form(None)
+    audio_file: UploadFile = File(title="audio_file"),
+    genre: str = Form(title="genre"),
+    releaseDate: str = Form(title="releaseDate"),
+    lyric: str = Form(title="lyric"),
+    Id: str = Form(title="Id")
 ):
     try:
         _repo = SongEmbeddingRepository(DATABASE_URL=DATABASE_URL)

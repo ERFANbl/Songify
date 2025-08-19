@@ -19,7 +19,7 @@ namespace Application.Services
             _configService = configService;
         }
 
-        public async Task<string> InitialUserVector()
+        private async Task<string> InitialUserVector()
         {
             using var httpClient = new HttpClient();
 
