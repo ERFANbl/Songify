@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from Repositories.UserRepository import UserEmbeddingRepository
 from Repositories.SongRepository import SongEmbeddingRepository
 
-DATABASE_URL = "postgresql://postgres:P%40ssw0rd%212025%23Strong@localhost:5433/AppDb"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:P%40ssw0rd%212025%23Strong@localhost:5433/AppDb")
 
 import json
 import math
