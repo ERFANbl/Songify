@@ -1,0 +1,47 @@
+version: "3.9"
+services:
+  encoder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args: { SERVICE: encoder }
+    image: songify/encoder:latest
+    command: uvicorn EncoderService.SongEncoder:app --host 0.0.0.0 --port 8000
+    environment:
+      - DATABASE_URL=postgresql://postgres:P%40ssw0rd%212025%23Strong@host.docker.internal:5433/AppDb
+    ports: ["8000:8000"]
+    volumes:
+      - ./EncoderService/check_point:/app/EncoderService/check_point:ro
+      - ./Repositories/SongRepository.py:/app/Repositories/SongRepository.py:ro
+      - ./EncoderService/Preprocess.py:/app/EncoderService/Preprocess.py:ro
+      - ./EncoderService/EncoderModel.py:/app/EncoderService/EncoderModel.py:ro
+
+  user_vector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args: { SERVICE: uservec }
+    image: songify/user-vector:latest
+    command: uvicorn UserVectorService.UserVectorService:app --host 0.0.0.0 --port 8001
+    environment:
+      - DATABASE_URL=postgresql://postgres:P%40ssw0rd%212025%23Strong@host.docker.internal:5433/AppDb
+    ports: ["8001:8001"]
+    volumes:
+      - ./Repositories/SongRepository.py:/app/Repositories/SongRepository.py:ro
+      - ./Repositories/UserRepository.py:/app/Repositories/UserRepository.py:ro
+      - ./UserVectorService:/app/UserVectorService:ro  # کدت رو ببینه
+
+  made_for_user:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args: { SERVICE: madeforuser }
+    image: songify/made-for-user:latest
+    command: uvicorn MadeForUserService.MadeForUserService:app --host 0.0.0.0 --port 8002
+    environment:
+      - DATABASE_URL=postgresql://postgres:P%40ssw0rd%212025%23Strong@host.docker.internal:5433/AppDb
+    ports: ["8002:8002"]
+    volumes:
+      - ./Repositories/SongRepository.py:/app/Repositories/SongRepository.py:ro
+      - ./Repositories/UserRepository.py:/app/Repositories/UserRepository.py:ro
+      - ./MadeForUserService:/app/MadeForUserService:ro

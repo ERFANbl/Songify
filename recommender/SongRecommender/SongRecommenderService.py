@@ -7,7 +7,7 @@ import torch.nn as nn
 from Repositories.UserRepository import UserEmbeddingRepository
 from Repositories.SongRepository import SongEmbeddingRepository
 
-DATABASE_URL = "postgresql+psycopg2://postgres:P@ssw0rd!2025#Strong@localhost:5432/AppDb"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:P@ssw0rd!2025#Strong@localhost:5432/AppDb")
 
 _userRepo = UserEmbeddingRepository(DATABASE_URL)
 _songRepo = SongEmbeddingRepository(DATABASE_URL)

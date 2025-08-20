@@ -3,13 +3,13 @@ import sys
 import torch
 from transformers import AutoTokenizer
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
-from EncoderModel import SongModel
-from Preprocess import extract_audio_features, preprocess_metadata
+from .EncoderModel import SongModel
+from .Preprocess import extract_audio_features, preprocess_metadata
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Repositories.SongRepository import SongEmbeddingRepository
 
-DATABASE_URL = "postgresql://postgres:P%40ssw0rd%212025%23Strong@localhost:5433/AppDb"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:P%40ssw0rd%212025%23Strong@localhost:5433/AppDb")
 
 app = FastAPI()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
